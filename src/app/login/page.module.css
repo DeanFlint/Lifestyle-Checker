@@ -1,0 +1,54 @@
+/* Form styles */
+.formCard {
+  max-width: 480px;
+  margin: 1.5rem auto;
+  text-align: left;
+  border: 1px solid #e6e6e6;
+  border-radius: 8px;
+  padding: 2em;
+}
+
+.formRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem 1rem;
+}
+
+.formRow label {
+  font-weight: 600;
+}
+
+.formRow input {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.formActions {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem 1.25rem;
+}
+
+.formActions button {
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #666;
+  background: #fff;
+  color: #000;
+  cursor: pointer;
+}
+
+.error {
+  color: #b00020;
+  font-size: 0.85rem;
+}
+
+.result {
+  max-width: 480px;
+  margin: 1rem auto;
+  padding: 1rem;
+  border: 1px solid #e6e6e6;
+  border-radius: 8px;
+}

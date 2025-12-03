@@ -11,6 +11,7 @@
 
   display: flex;
   min-height: 100vh;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   font-family: var(--font-geist-sans);
@@ -23,8 +24,8 @@
   width: 100%;
   max-width: 800px;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
+  align-items: center;
+  /* justify-content: space-around; */
   background-color: var(--foreground);
   padding: 120px 60px;
 }
@@ -139,3 +140,4 @@ a.secondary {
     --button-secondary-border: #1a1a1a;
   }
 }
+
