@@ -3,6 +3,11 @@
 import React, { useState } from 'react'
 import styles from "./page.module.css";
 
+type LoginProps = {
+  onLoginSuccess?: (age: number) => void
+  onLogout?: () => void
+}
+
 type FormData = {
   nhsnumber: string // Keep as string to preserve leading zeros
   surname: string
@@ -15,7 +20,7 @@ type ApiPatient = {
   born: string; // defaults to DD-MM-YYYY
 }
 
-function Login(): React.ReactElement {
+export default function Login({ onLoginSuccess, onLogout }: LoginProps): React.ReactElement {
   const [form, setForm] = useState<FormData>({ nhsnumber: '', surname: '', dob: '' })
   const [submitted, setSubmitted] = useState<FormData | null>(null)
   const [errors, setErrors] = useState<Partial<FormData>>({})
@@ -104,6 +109,8 @@ function Login(): React.ReactElement {
       setApiResult(null)
     }
     else if (nhsMatch && surnameMatch && dobMatch) {
+      const age = getAge(form.dob)
+      if (age !== null) onLoginSuccess?.(age)
       setApiResult(data)
     }
 
@@ -191,6 +198,9 @@ function Login(): React.ReactElement {
                   setForm({ nhsnumber: '', surname: '', dob: '' })
                   setErrors({})
                   setSubmitted(null)
+                  setApiError(null)
+                  setApiResult(null)
+                  onLogout?.()
                 }}
               >
                 Logout
@@ -202,4 +212,3 @@ function Login(): React.ReactElement {
     </div>
   )
 }
-export default Login

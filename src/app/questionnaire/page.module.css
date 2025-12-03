@@ -1,0 +1,59 @@
+.wrapper {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px;
+  display: grid;
+  gap: 16px;
+}
+
+.form {
+  display: grid;
+  gap: 16px;
+}
+
+.fieldset {
+  border: 1px solid #e3e3e3;
+  border-radius: 8px;
+  padding: 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.fieldset legend {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.fieldset label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.error {
+  color: #b00020;
+  font-weight: 600;
+}
+
+.submit {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 6px;
+  background: #0f6cbd;
+  color: #fff;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.result {
+  border: 1px solid #e3e3e3;
+  border-radius: 8px;
+  padding: 12px;
+  display: grid;
+  gap: 8px;
+}
