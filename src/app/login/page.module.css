@@ -1,6 +1,7 @@
 /* Form styles */
 .formCard {
   max-width: 480px;
+  min-height: 300px;
   margin: 1.5rem auto;
   text-align: left;
   border: 1px solid #e6e6e6;
@@ -47,6 +48,7 @@
 
 .result {
   max-width: 480px;
+  min-height: 300px;
   margin: 1rem auto;
   padding: 1rem;
   border: 1px solid #e6e6e6;

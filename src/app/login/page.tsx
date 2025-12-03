@@ -9,10 +9,50 @@ type FormData = {
   dob: string // YYYY-MM-DD
 }
 
+type ApiPatient = {
+  nhsnumber: string;
+  name: string; // Surname, Firstname
+  born: string; // defaults to DD-MM-YYYY
+}
+
 function Login(): React.ReactElement {
   const [form, setForm] = useState<FormData>({ nhsnumber: '', surname: '', dob: '' })
   const [submitted, setSubmitted] = useState<FormData | null>(null)
   const [errors, setErrors] = useState<Partial<FormData>>({})
+  const [isLoading, setIsLoading] = useState(false)
+  const [apiError, setApiError] = useState<string | null>(null)
+  const [apiResult, setApiResult] = useState<Record<string, unknown> | null>(null)
+
+  function normalise(value: unknown) {
+    return String(value ?? '').trim().toLowerCase();
+  }
+
+  function formatDateYMD(value: string) {
+    if (!value) return '';
+    const [d, m, y] = value.split('-');
+    return [y, m, d].join('-');
+  }
+
+  function getAge(dob: string) {
+    // Check dob is present
+    if (!dob) return null;
+    // Parse date, check if valid
+    const birth = new Date(dob);
+    if (Number.isNaN(birth.getTime())) return null;
+
+    const today = new Date();
+    // Calculate age = difference between current year and birth year
+    let age = today.getFullYear() - birth.getFullYear();
+
+    // Check if birthday has occurred this year, if not, subtract a year
+    const hasHadBirthdayThisYear =
+      today.getMonth() > birth.getMonth() ||
+      (today.getMonth() === birth.getMonth() && today.getDate() >= birth.getDate());
+
+    if (!hasHadBirthdayThisYear) age -= 1;
+
+    return age;
+  }
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target
@@ -27,6 +67,11 @@ function Login(): React.ReactElement {
     return err
   }
 
+  function surnameFromResponse(rawName: unknown) {
+    if (typeof rawName !== 'string') return '';
+    return rawName.split(',')[0]?.trim() ?? '';
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const v = validate(form)
@@ -35,6 +80,34 @@ function Login(): React.ReactElement {
 
     // Set submitted locally for UX whilst we call the API
     setSubmitted(form);
+
+    setIsLoading(true)
+
+    const res = await fetch(`/api/login?nhsnum=${encodeURIComponent(form.nhsnumber)}`, { cache: 'no-store' });
+    const data = await res.json();
+    if (!res.ok) setApiError(data.error || 'Login failed');
+
+    const patient = data as ApiPatient;
+    const surnameFromApi = surnameFromResponse(data.name);
+
+    const nhsMatch = normalise(patient.nhsnumber ?? data.nhsNumber) === normalise(form.nhsnumber);
+    const surnameMatch = normalise(surnameFromApi ?? data.name) === normalise(form.surname);
+    const dobMatch = formatDateYMD(patient.born) === form.dob;
+
+    setApiResult({ ...patient, nhsMatch, surnameMatch, dobMatch });
+
+    if (!nhsMatch || !surnameMatch || !dobMatch) {
+      setApiError("Your details could not be found")
+      setApiResult(null)
+    } else if (getAge(form.dob) !== null && getAge(form.dob)! < 18) {
+      setApiError("You are not eligible for this service")
+      setApiResult(null)
+    }
+    else if (nhsMatch && surnameMatch && dobMatch) {
+      setApiResult(data)
+    }
+
+    setIsLoading(false)
   }
 
   return (
@@ -87,6 +160,45 @@ function Login(): React.ReactElement {
           </div>
         </form>
       }
+
+      {submitted && (
+        <section className={styles.result}>
+          {isLoading && <p>Checking NHS number…</p>}
+
+          {apiError && (
+            <div>
+              <h3 className={styles.error}>{apiError}</h3>
+              <button
+                type="button"
+                onClick={() => {
+                  setForm({ nhsnumber: '', surname: '', dob: '' })
+                  setErrors({})
+                  setSubmitted(null)
+                  setApiError(null)
+                }}
+              >
+                Back to login
+              </button>
+            </div>
+          )}
+
+          {apiResult && (
+            <div>
+              <h3>Welcome {String(apiResult.name)}!</h3>
+              <button
+                type="button"
+                onClick={() => {
+                  setForm({ nhsnumber: '', surname: '', dob: '' })
+                  setErrors({})
+                  setSubmitted(null)
+                }}
+              >
+                Logout
+              </button>
+            </div>
+          )}
+        </section>
+      )}
     </div>
   )
 }
