@@ -14,7 +14,6 @@ export default function Home() {
       <main className={styles.main}>
         <div className={styles.heading}>
           <h1>T2 Lifestyle Checker</h1>
-          <p>Welcome to the T2 Lifestyle Checker application.</p>
         </div>
         <Login
           onLoginSuccess={(userAge) => {
@@ -27,7 +26,7 @@ export default function Home() {
           }}
         />
 
-        {isLoggedIn && <Questionnaire age={age} />}
+        {isLoggedIn && age !== null && <Questionnaire age={age} />}
       </main>
     </div>
   );

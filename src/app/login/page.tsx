@@ -20,6 +20,55 @@ type ApiPatient = {
   born: string; // defaults to DD-MM-YYYY
 }
 
+function validate(data: FormData) {
+  const err: Partial<FormData> = {}
+  if (!data.nhsnumber) err.nhsnumber = 'NHS Number is required'
+  if (!data.surname) err.surname = 'Surname is required'
+  if (!data.dob) err.dob = 'Date of birth is required'
+  return err
+}
+
+function surnameFromResponse(rawName: unknown) {
+  if (typeof rawName !== 'string') return '';
+  return rawName.split(',')[0]?.trim() ?? '';
+}
+
+function formatName(rawName: string) {
+  const [last, first] = rawName.split(',').map((part) => part.trim());
+  const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+  return `${cap(first)} ${cap(last)}`;
+}
+
+function normalise(value: unknown) {
+  return String(value ?? '').trim().toLowerCase();
+}
+
+function formatDateYMD(value: string) {
+  if (!value) return '';
+  const [d, m, y] = value.split('-');
+  return [y, m, d].join('-');
+}
+
+function getAge(dob: string) {
+  // Check dob is present
+  if (!dob) return null;
+  // Parse date, check if valid
+  const birth = new Date(dob);
+  if (Number.isNaN(birth.getTime())) return null;
+
+  const today = new Date();
+  // Calculate age = difference between current year and birth year
+  let age = today.getFullYear() - birth.getFullYear();
+
+  // Check if birthday has occurred this year, if not, subtract a year
+  const hasHadBirthdayThisYear =
+    today.getMonth() > birth.getMonth() ||
+    (today.getMonth() === birth.getMonth() && today.getDate() >= birth.getDate());
+
+  if (!hasHadBirthdayThisYear) age -= 1;
+  return age;
+}
+
 export default function Login({ onLoginSuccess, onLogout }: LoginProps): React.ReactElement {
   const [form, setForm] = useState<FormData>({ nhsnumber: '', surname: '', dob: '' })
   const [submitted, setSubmitted] = useState<FormData | null>(null)
@@ -28,53 +77,9 @@ export default function Login({ onLoginSuccess, onLogout }: LoginProps): React.R
   const [apiError, setApiError] = useState<string | null>(null)
   const [apiResult, setApiResult] = useState<Record<string, unknown> | null>(null)
 
-  function normalise(value: unknown) {
-    return String(value ?? '').trim().toLowerCase();
-  }
-
-  function formatDateYMD(value: string) {
-    if (!value) return '';
-    const [d, m, y] = value.split('-');
-    return [y, m, d].join('-');
-  }
-
-  function getAge(dob: string) {
-    // Check dob is present
-    if (!dob) return null;
-    // Parse date, check if valid
-    const birth = new Date(dob);
-    if (Number.isNaN(birth.getTime())) return null;
-
-    const today = new Date();
-    // Calculate age = difference between current year and birth year
-    let age = today.getFullYear() - birth.getFullYear();
-
-    // Check if birthday has occurred this year, if not, subtract a year
-    const hasHadBirthdayThisYear =
-      today.getMonth() > birth.getMonth() ||
-      (today.getMonth() === birth.getMonth() && today.getDate() >= birth.getDate());
-
-    if (!hasHadBirthdayThisYear) age -= 1;
-
-    return age;
-  }
-
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target
     setForm((s) => ({ ...s, [name]: value }))
-  }
-
-  function validate(data: FormData) {
-    const err: Partial<FormData> = {}
-    if (!data.nhsnumber) err.nhsnumber = 'NHS Number is required'
-    if (!data.surname) err.surname = 'Surname is required'
-    if (!data.dob) err.dob = 'Date of birth is required'
-    return err
-  }
-
-  function surnameFromResponse(rawName: unknown) {
-    if (typeof rawName !== 'string') return '';
-    return rawName.split(',')[0]?.trim() ?? '';
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -85,7 +90,6 @@ export default function Login({ onLoginSuccess, onLogout }: LoginProps): React.R
 
     // Set submitted locally for UX whilst we call the API
     setSubmitted(form);
-
     setIsLoading(true)
 
     const res = await fetch(`/api/login?nhsnum=${encodeURIComponent(form.nhsnumber)}`, { cache: 'no-store' });
@@ -94,7 +98,6 @@ export default function Login({ onLoginSuccess, onLogout }: LoginProps): React.R
 
     const patient = data as ApiPatient;
     const surnameFromApi = surnameFromResponse(data.name);
-
     const nhsMatch = normalise(patient.nhsnumber ?? data.nhsNumber) === normalise(form.nhsnumber);
     const surnameMatch = normalise(surnameFromApi ?? data.name) === normalise(form.surname);
     const dobMatch = formatDateYMD(patient.born) === form.dob;
@@ -169,7 +172,7 @@ export default function Login({ onLoginSuccess, onLogout }: LoginProps): React.R
       }
 
       {submitted && (
-        <section className={styles.result}>
+        <section>
           {isLoading && <p>Checking NHS number…</p>}
 
           {apiError && (
@@ -190,8 +193,8 @@ export default function Login({ onLoginSuccess, onLogout }: LoginProps): React.R
           )}
 
           {apiResult && (
-            <div>
-              <h3>Welcome {String(apiResult.name)}!</h3>
+            <div className={styles.welcomeHeader}>
+              <h3>Welcome {formatName(String(apiResult.name))}!</h3>
               <button
                 type="button"
                 onClick={() => {
