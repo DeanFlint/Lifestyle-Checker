@@ -13,7 +13,7 @@
 
 .form {
   display: grid;
-  gap: 16px;
+  gap: 25px;
 }
 
 .fieldset {
@@ -22,6 +22,7 @@
   padding: 12px;
   display: grid;
   gap: 8px;
+
 }
 
 .fieldset legend {
@@ -32,7 +33,6 @@
 .fieldset label {
   display: flex;
   gap: 8px;
-  align-items: center;
 }
 
 .error {
@@ -40,14 +40,18 @@
   font-weight: 600;
 }
 
-.submit {
-  padding: 10px 14px;
-  border: none;
+.button {
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.8rem;
   border-radius: 6px;
-  background: #0f6cbd;
-  color: #fff;
+  border: 1px solid #666;
+  background: #fff;
+  color: #000;
   cursor: pointer;
-  width: fit-content;
+  font-size: 0.85rem;
+  font-weight: bold;
+  max-width: 120px;
+  margin: 0 auto;
 }
 
 .submit:disabled {
@@ -55,8 +59,11 @@
   cursor: not-allowed;
 }
 
+.button:hover {
+  background: #cecece;
+}
+
 .result {
-  /* border: 1px solid #e3e3e3; */
   border-radius: 8px;
   padding: 20px;
   display: grid;

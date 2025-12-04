@@ -165,7 +165,7 @@ export default function Questionnaire({ age }: Props): React.ReactElement {
 
         {error && <p className={styles.error}>{error}</p>}
 
-        <button type="submit" className={styles.submit}>
+        <button type="submit" className={styles.button}>
           Submit
         </button>
       </form>
