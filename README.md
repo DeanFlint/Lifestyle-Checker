@@ -100,9 +100,11 @@ Nhs Number | Name | Age | DOB |
 
 ### Given more time, here are the parts I would focus on next:
 - Add more form validation for the user login
-- Add more tests scenarios added
+- Add more tests scenarios
 - Use of accessibility tools such as Wave and Lighthouse
 - Ability to see questionnaire answers once user has submitted (and option to reset without logging out)
+- Use the NHS.UK React component library: https://main--65aa76b29d00a047fe683b95.chromatic.com/?path=/docs/welcome--docs
+- Add an option to toggle dark/light mode
 
 ## Part Three
 How could the code be implemented in such a way that the scoring mechanism could be altered without requiring the code to be recompiled and re-deployed?

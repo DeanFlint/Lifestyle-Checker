@@ -41,9 +41,32 @@
   cursor: pointer;
 }
 
-.error {
-  color: #b00020;
-  font-size: 0.85rem;
+.formRowError {
+  color: #ff7c94;
+  font-weight: bold;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.errorCard {
+  max-width: 480px;
+  min-height: 300px;
+  margin: 1rem auto;
+  padding: 1rem;
+  border: 1px solid #ffffff;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.submitErrorMessage {
+  color: #ff7c94;
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 20px;
 }
 
 .result {
@@ -58,18 +81,42 @@
 .welcomeHeader {
   text-align: center;
   margin-bottom: 1rem;
+}
 
-  button {
-    margin-top: 0.5rem;
-    padding: 0.4rem 0.8rem;
-    border-radius: 6px;
-    border: 1px solid #666;
-    background: #fff;
-    color: #000;
-    cursor: pointer;
-  }
+.button {
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid #666;
+  background: #fff;
+  color: #000;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
 
-  button:hover {
-    background: #cecece;
+.button:hover {
+  background: #cecece;
+}
+
+.isLoading {
+  /* display: flex; */
+  text-align: center;
+  gap: 0.6rem;
+  font-weight: 600;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ccc;
+  border-top-color: #333;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }

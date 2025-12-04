@@ -135,7 +135,7 @@ export default function Login({ onLoginSuccess, onLogout }: LoginProps): React.R
               type="text"
               required
             />
-            {errors.nhsnumber && <small className={styles.error}>{errors.nhsnumber}</small>}
+            {errors.nhsnumber && <p className={styles.formRowError}>{errors.nhsnumber}</p>}
           </div>
 
           <div className={styles.formRow}>
@@ -149,7 +149,7 @@ export default function Login({ onLoginSuccess, onLogout }: LoginProps): React.R
               type="text"
               required
             />
-            {errors.surname && <small className={styles.error}>{errors.surname}</small>}
+            {errors.surname && <p className={styles.formRowError}>{errors.surname}</p>}
           </div>
 
           <div className={styles.formRow}>
@@ -162,23 +162,29 @@ export default function Login({ onLoginSuccess, onLogout }: LoginProps): React.R
               type="date"
               required
             />
-            {errors.dob && <small className={styles.error}>{errors.dob}</small>}
+            {errors.dob && <p className={styles.formRowError}>{errors.dob}</p>}
           </div>
 
           <div className={styles.formActions}>
-            <button type="submit">Submit</button>
+            <button className={styles.button} type="submit">Submit</button>
           </div>
         </form>
       }
 
       {submitted && (
         <section>
-          {isLoading && <p>Checking NHS number…</p>}
+          {isLoading && 
+            <div className={styles.isLoading}>
+              <p>Checking NHS number</p>
+            </div>
+          }
+
 
           {apiError && (
-            <div>
-              <h3 className={styles.error}>{apiError}</h3>
+            <div className={styles.errorCard}>
+              <h3 className={styles.submitErrorMessage}>{apiError}</h3>
               <button
+                className={styles.button}
                 type="button"
                 onClick={() => {
                   setForm({ nhsnumber: '', surname: '', dob: '' })
@@ -196,6 +202,7 @@ export default function Login({ onLoginSuccess, onLogout }: LoginProps): React.R
             <div className={styles.welcomeHeader}>
               <h3>Welcome {formatName(String(apiResult.name))}!</h3>
               <button
+                className={styles.button}
                 type="button"
                 onClick={() => {
                   setForm({ nhsnumber: '', surname: '', dob: '' })
