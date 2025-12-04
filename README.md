@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Lifestyle Checker
 
-## Getting Started
+A Next.js 16 app that lets users validate their NHS details and complete a short lifestyle questionnaire. 
+Successful login reveals the questionnaire and returns tailored guidance based on age- and answer-weighted scoring.
 
-First, run the development server:
+## Stack
+- Next.js 16 (App Router) with React 19
+- TypeScript, CSS modules
+- Jest + Testing Library for unit/UI tests
 
+## Prerequisites
+- Node.js 20+
+- npm (or yarn if you prefer)
+- Access to the upstream API endpoint and subscription key
+
+## Environment
+Create `.env.local` with:
+```
+API_BASE_URL=https://al-tech-test-apim.azure-api.net/tech-test/t2/patients
+API_KEY=your-key-here
+```
+These are injected into the `/api/login` route for server-side fetches.
+
+## Local Development
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# open http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tests
+```bash
+npm test
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Docker
+Production-style image:
+```bash
+docker compose up --build
+# serves on http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Hot-reload dev container (swap into `docker-compose.yml` when needed):
+```yaml
+services:
+  web:
+    image: node:20-alpine
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --hostname 0.0.0.0 --port 3000"
+    ports:
+      - "3000:3000"
+    environment:
+      API_BASE_URL: https://al-tech-test-apim.azure-api.net/tech-test/t2/patients
+      API_KEY: your-key-here
+      # CHOKIDAR_USEPOLLING: "1"  # enable if file changes aren't detected
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+```
 
-## Learn More
+## Test users
+There are 5 patients configured, which should allow you to test various scenarios
 
-To learn more about Next.js, take a look at the following resources:
+Nhs Number | Name | Age | DOB |
+-----------|------|-----|----|
+111222333  | DOE, John | 18 | 14/01/2007
+222333444  | SMITH, Alice| 25 | 02/03/2000
+333444555  | CARTER, Bob | 46 | 20/05/1979
+444555666  | BOND, Charles | 70 | 18/07/1955
+555666777  | MAY, Megan | 14 | 14/11/2011
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## App Flow
+1) User enters NHS number, surname, and DOB.
+2) `/api/login` calls `API_BASE_URL/{nhsnum}` with `API_KEY` and checks NHS number, surname, and DOB match.
+3) If eligible (16+), the questionnaire appears; scoring uses age brackets and answer weights to decide whether to recommend an appointment.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Key Scripts
+- `npm run dev` start dev server
+- `npm run build` production build
+- `npm start` run built app
+- `npm test` run Jest suite
 
-## Deploy on Vercel
+## Project Structure
+- `src/app/page.tsx` entry shell tying login + questionnaire
+- `src/app/login` login UI and validation
+- `src/app/questionnaire` questionnaire UI and scoring
+- `src/app/api/login/route.ts` server-side login proxy to upstream API
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Future Work
