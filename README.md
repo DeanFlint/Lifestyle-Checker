@@ -10,7 +10,7 @@ Successful login reveals the questionnaire and returns tailored guidance based o
 
 ## Prerequisites
 - Node.js 20+
-- npm (or yarn if you prefer)
+- npm
 - Access to the upstream API endpoint and subscription key
 
 ## Environment
@@ -88,3 +88,25 @@ Nhs Number | Name | Age | DOB |
 - `src/app/api/login/route.ts` server-side login proxy to upstream API
 
 ## Future Work
+### With the time given, I wanted to focus on the following:
+**[Link to project KANBAN board used](https://github.com/users/DeanFlint/projects/2/views/1)**
+- Functional login form (with basic validation)
+- API Routing to authenicate user
+- Questionnaire for authenticated user
+- Questionnaire logic to determine outcome based on user age and their answers
+- Introductory tests
+- Styling from the NHS styling package
+- Portability considered by adding ability to run via Docker
+
+### Given more time, here are the parts I would focus on next:
+- Add more form validation for the user login
+- Add more tests scenarios added
+- Use of accessibility tools such as Wave and Lighthouse
+- Ability to see questionnaire answers once user has submitted (and option to reset without logging out)
+
+## Part Three
+How could the code be implemented in such a way that the scoring mechanism could be altered without requiring the code to be recompiled and re-deployed?
+This could be a change to age groups or scores for individual questions.
+
+- **Config file (JSON/YAML):** Load config/scoring.json (age bands + weights) at runtime (Validate on load). We can make edits the file and restart the container (no rebuild/redeployment).
+- **Remote config/API:** Serve scoring from an internal endpoint (e.g., /api/scoring which is backed by a DB). Client fetches it at startup. We can update via the data store and the app picks it up on next fetch/cache expiry.
